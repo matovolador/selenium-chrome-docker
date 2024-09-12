@@ -5,6 +5,8 @@ services:
     build: scraper
     env_file:
       - .env
+    volumes:
+      - ./scraper/:/app/
     networks:
       - db-network
     depends_on:
