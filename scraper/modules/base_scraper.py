@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from enum import Enum
-
+from time import sleep
 from logger import Logger
 
 
@@ -94,6 +94,13 @@ class BaseScraper:
         if clear_first:
             input_element.clear()
         input_element.send_keys(keys)
+
+    def click(self, element):
+        element.click()
+
+    def sleep(self, sleep_for_seconds):
+        logging.info(f"Sleeping for {sleep_for_seconds} seconds")
+        sleep(sleep_for_seconds)
 
     def quit(self):
         logging.info("Destroying driver")
