@@ -39,6 +39,7 @@ class BaseScraper:
         logging.info("Base Scraper Initialized")
         self.start_time = datetime.now().astimezone()
         self.end_time = None
+        self.time_elapsed = None
         logging.info(f"Start time: {self.start_time}")
 
     def wait(self, wait_condition_type: 'BaseScraper.SelectorType', wait_condition_element_name, wait_condition_delay=30, not_present=False):
@@ -104,8 +105,9 @@ class BaseScraper:
         self.end_time = datetime.now().astimezone()
         logging.info(f"End time {self.end_time}")
         time_difference = self.end_time - self.start_time
+        self.time_elapsed = time_difference.total_seconds()
         logging.info(
-            f"Time elapsed: {time_difference.total_seconds()} seconds.")
+            f"Time elapsed: {self.time_elapsed} seconds.")
         logging.info("Destroying driver")
         try:
             self.driver.quit()
