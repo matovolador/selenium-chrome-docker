@@ -10,16 +10,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 from enum import Enum
 from time import sleep
 from logger import Logger
+from datetime import datetime
 
 
 logging = Logger().get_logger()
 
-# now = datetime.now().astimezone()
-# date_from = datetime(now.year,now.month,now.day,9,0,0,0)
-# date_to = datetime(now.year,now.month,now.day,22,0,0,0)
-# if (now<date_from or now>=date_to):
-#     logging.info("Not running during {}".format(now))
-#     exit()
 
 db = next(database.get_db())
 
@@ -42,6 +37,9 @@ class BaseScraper:
         self.driver = webdriver.Chrome(service=Service(
             ChromeDriverManager().install()), options=chrome_options)
         logging.info("Base Scraper Initialized")
+        self.start_time = datetime.now().astimezone()
+        self.end_time = None
+        logging.info(f"Start time: {self.start_time}")
 
     def wait(self, wait_condition_type: 'BaseScraper.SelectorType', wait_condition_element_name, wait_condition_delay=30, not_present=False):
         if not isinstance(wait_condition_type, BaseScraper.SelectorType):
@@ -103,6 +101,11 @@ class BaseScraper:
         sleep(sleep_for_seconds)
 
     def quit(self):
+        self.end_time = datetime.now().astimezone()
+        logging.info(f"End time {self.end_time}")
+        time_difference = self.end_time - self.start_time
+        logging.info(
+            f"Time elapsed: {time_difference.total_seconds()} seconds.")
         logging.info("Destroying driver")
         try:
             self.driver.quit()
