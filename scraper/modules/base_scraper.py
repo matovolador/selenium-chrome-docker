@@ -90,6 +90,11 @@ class BaseScraper:
             else:
                 return element_container.find_elements(selector, selector_value)
 
+    def send_input(self, input_element, keys, clear_first=True):
+        if clear_first:
+            input_element.clear()
+        input_element.send_keys(keys)
+
     def quit(self):
         logging.info("Destroying driver")
         try:
