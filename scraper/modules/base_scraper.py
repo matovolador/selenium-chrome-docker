@@ -27,12 +27,16 @@ class BaseScraper:
         TAG_NAME = By.TAG_NAME
         X_PATH = By.XPATH
 
-    def __init__(self):
+    def __init__(self, proxy=None):
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
+
+        if proxy:
+            chrome_options.add_argument(f'--proxy-server={proxy}')
+            logging.info(f"Using proxy: {proxy}")
 
         self.driver = webdriver.Chrome(service=Service(
             ChromeDriverManager().install()), options=chrome_options)
