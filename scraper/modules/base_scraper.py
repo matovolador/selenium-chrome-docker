@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-
+from enum import Enum
 
 from logger import Logger
 
@@ -25,6 +25,13 @@ db = next(database.get_db())
 
 
 class BaseScraper:
+
+    class SelectorType(Enum):
+        CLASS_NAME = By.CLASS_NAME
+        CSS_SELECTOR = By.CSS_SELECTOR
+        TAG_NAME = By.TAG_NAME
+        X_PATH = By.XPATH
+
     def __init__(self):
         chrome_options = Options()
         chrome_options.add_argument("--headless")
@@ -36,17 +43,13 @@ class BaseScraper:
             ChromeDriverManager().install()), options=chrome_options)
         logging.info("Base Scraper Initialized")
 
-    def wait(self, wait_condition_type, wait_condition_element_name, wait_condition_delay=30, not_present=False):
-        if wait_condition_type == "class_name":
-            wait_condition_type_obj = By.CLASS_NAME
-        elif wait_condition_type == "css_selector":
-            wait_condition_type_obj = By.CSS_SELECTOR
-        elif wait_condition_type == "tag_name":
-            wait_condition_type_obj = By.TAG_NAME
-        elif wait_condition_type == "x_path":
-            wait_condition_type_obj = By.XPATH
-        else:
-            raise Exception("Unhandled wait_condition_type")
+    def wait(self, wait_condition_type: 'BaseScraper.SelectorType', wait_condition_element_name, wait_condition_delay=30, not_present=False):
+        if not isinstance(wait_condition_type, BaseScraper.SelectorType):
+            raise Exception(
+                "Invalid wait_condition_type, must be of type SelectorType")
+
+        wait_condition_type_obj = wait_condition_type.value
+
         try:
             if not not_present:
                 WebDriverWait(self.driver, wait_condition_delay).until(
@@ -57,7 +60,7 @@ class BaseScraper:
         except Exception as e:
             raise Exception(e)
 
-    def open_url(self, url, wait_condition_type, wait_condition_element_name, wait_condition_delay=30):
+    def open_url(self, url, wait_condition_type: 'BaseScraper.SelectorType', wait_condition_element_name, wait_condition_delay=30):
         logging.info(f"Loading url {url}")
         self.driver.get(url)
         self.wait(wait_condition_type, wait_condition_element_name,
@@ -71,18 +74,11 @@ class BaseScraper:
     def js_click(self, element):
         self.driver.execute_script("arguments[0].click();", element)
 
-    def get_element(self, selector_type, selector_value, as_list=False, element_container=None):
-        if selector_type == "class_name":
-            selector = By.CLASS_NAME
-        elif selector_type == "css_selector":
-            selector = By.CSS_SELECTOR
-        elif selector_type == "tag_name":
-            selector = By.TAG_NAME
-        elif selector_type == "x_path":
-            selector = By.XPATH
-        else:
-            raise Exception(f"Unhandled selector_type {selector_type}")
-
+    def get_element(self, selector_type: 'BaseScraper.SelectorType', selector_value, as_list=False, element_container=None):
+        if not isinstance(selector_type, BaseScraper.SelectorType):
+            raise Exception(
+                "Invalid selector_type, must be of type SelectorType")
+        selector = selector_type.value
         if not as_list:
             if not element_container:
                 return self.driver.find_element(selector, selector_value)
