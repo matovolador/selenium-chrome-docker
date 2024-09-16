@@ -46,6 +46,9 @@ class BaseScraper:
         self.time_elapsed = None
         logging.info(f"Start time: {self.start_time}")
 
+    def get_current_url(self):
+        return self.driver.current_url
+
     def wait(self, wait_condition_type: 'BaseScraper.SelectorType', wait_condition_element_name, wait_condition_delay=30, not_present=False):
         if not isinstance(wait_condition_type, BaseScraper.SelectorType):
             raise Exception(
