@@ -104,6 +104,12 @@ class BaseScraper:
     def click(self, element):
         element.click()
 
+    def execute_script(self, script, element, is_async=False):
+        if is_async:
+            self.driver.execute_async_script(script, element)
+        else:
+            self.driver.execute_script(script, element)
+
     def sleep(self, sleep_for_seconds):
         logging.info(f"Sleeping for {sleep_for_seconds} seconds")
         sleep(sleep_for_seconds)
