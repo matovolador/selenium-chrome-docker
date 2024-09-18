@@ -110,6 +110,9 @@ class BaseScraper:
         else:
             self.driver.execute_script(script, element)
 
+    def set_element_property_value(self, element, prop, value):
+        self.execute_script(f"arguments[0].{prop} = '{value}';", element)
+
     def sleep(self, sleep_for_seconds):
         logging.info(f"Sleeping for {sleep_for_seconds} seconds")
         sleep(sleep_for_seconds)
